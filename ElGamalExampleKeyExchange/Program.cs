@@ -8,9 +8,13 @@ namespace ElGamalExampleKeyExchange
     {
         static void Main(string[] args)
         {
+            //krijon një instaance të algoritmit Rijndael dhe
+            //specifikon 128bit si gjatësinë e çelësit
+
             Rijndael x_rijndael = Rijndael.Create();
             x_rijndael.KeySize = 128;
 
+            // klasa do të krijojë një qelës të ri për të marrë vleren e sesionit
             byte[] x_session_key = x_rijndael.Key;
 
             Console.WriteLine("Session key generated: ");
@@ -19,9 +23,8 @@ namespace ElGamalExampleKeyExchange
                 Console.Write("{0:X2} ", b);
             }
 
-
+            //krijon nje instance te ElGamal
             var x_elgamal = new ElGamalManaged();
-
 
             ElGamalOAEPKeyExchangeFormatter x_formatter = new ElGamalOAEPKeyExchangeFormatter();
 
@@ -44,7 +47,6 @@ namespace ElGamalExampleKeyExchange
             {
                 Console.Write("{0:X2} ", b);
             }
-
 
             if (x_session_key.Length == x_session_key_deformatted.Length)
             {
