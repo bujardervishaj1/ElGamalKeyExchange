@@ -11,8 +11,11 @@ namespace ElGamalKeyExchange
         private PKCS1MaskGenerationMethod o_mask_generator;
         public ElGamalOAEPKeyExchangeFormatter()
         {
+            //krijn instancen e algoritmit
             o_algorithm = new ElGamalManaged();
+            //inicializon random
             o_random = new Random();
+            //inicializon mask generator 
             o_mask_generator = new PKCS1MaskGenerationMethod();
         }
 
@@ -25,6 +28,7 @@ namespace ElGamalKeyExchange
         }
         public override void SetKey(AsymmetricAlgorithm p_key)
         {
+            //siguron qe kemi te bejme me algoritem ElGamal
             if (p_key is ElGamal)
             {
                 o_algorithm.ImportParameters(((ElGamal)p_key).ExportParameters(false));
@@ -50,16 +54,21 @@ namespace ElGamalKeyExchange
         private byte[] o_lhash
           = new BigInteger("da39a3ee5e6b4b0d3255bfef95601890afd80709", 16).getBytes();
 
+        //krijon nje memory stream  per te mbajtur te padded data
         private byte[] CreateOAEPPaddedData(byte[] p_data)
         {
             MemoryStream x_stream = new MemoryStream();
-
+            
+            // definon K
             int x_K = o_algorithm.KeySize / 8 - 1;
 
+            //percaktoni madhesine e bllokut
             int x_max_bytes = x_K - (2 * o_lhash.Length) - 2;
 
+            //percakton se sa blloqe te plota jane
             int x_complete_blocks = p_data.Length / x_max_bytes;
-
+            
+            //ekzekuton dhe perpunon blloqet e plota
             int i = 0;
             byte[] x_block;
             for (; i < x_complete_blocks; i++)
@@ -69,6 +78,7 @@ namespace ElGamalKeyExchange
                 x_stream.Write(x_block, 0, x_block.Length);
             }
 
+            // perpunon qdo te dhene te mbetur
             x_block = CreateSingleOAEPBlock(p_data, i * x_max_bytes,
                 p_data.Length - (i * x_max_bytes), x_K);
             x_stream.Write(x_block, 0, x_block.Length);
