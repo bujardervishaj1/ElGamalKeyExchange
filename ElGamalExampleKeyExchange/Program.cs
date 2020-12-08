@@ -28,11 +28,15 @@ namespace ElGamalExampleKeyExchange
 
             ElGamalOAEPKeyExchangeFormatter x_formatter = new ElGamalOAEPKeyExchangeFormatter();
 
+            //instancen kemi krijuar për të përdorur kur enkripton të dhënat kryesore të sesionit
             x_formatter.SetKey(x_elgamal);
 
+
+            //enkriptoni çelësin e sesionit me formater
             byte[] x_exchange_data = x_formatter.CreateKeyExchange(x_session_key);
 
             Console.WriteLine("\nData to be exchanged: ");
+            //shkruan të dhënat e enkriptuara
             foreach (byte b in x_exchange_data)
             {
                 Console.Write("{0:X2} ", b);
