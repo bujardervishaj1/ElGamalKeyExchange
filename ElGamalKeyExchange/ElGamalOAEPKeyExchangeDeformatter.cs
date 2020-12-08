@@ -11,24 +11,18 @@ namespace ElGamalKeyExchange
 
         public ElGamalOAEPKeyExchangeDeformatter()
         {
-            // create the instance of the algorithm
             o_algorithm = new ElGamalManaged();
-            // init the mask generator
             o_mask_generator = new PKCS1MaskGenerationMethod();
         }
 
         public override void SetKey(AsymmetricAlgorithm p_key)
         {
-            // encure that we are dealing with an ElGamal algorithm
             if (p_key is ElGamal)
             {
-                // export the key and push it into the algorithm
                 o_algorithm.ImportParameters(((ElGamal)p_key).ExportParameters(true));
             }
             else
             {
-                // we can't continue because the algorithm
-                // is the one for this class
                 throw new ArgumentException("Key Algorithm is not ElGamal", "p_key");
             }
         }
@@ -46,13 +40,11 @@ namespace ElGamalKeyExchange
 
         public override byte[] DecryptKeyExchange(byte[] p_byte)
         {
-            // decrypt the ciphertext
             byte[] x_padded = o_algorithm.DecryptData(p_byte);
-            // remove the OAEP padding
             byte[] x_plaintext = RestoreOAEPPaddedData(x_padded);
-            // return the ciphertext
             return x_plaintext;
-        }// the lHash value which is the preamble to an OAEP block
+        }
+
         private byte[] o_lhash
           = new BigInteger("da39a3ee5e6b4b0d3255bfef95601890afd80709", 16).getBytes();
 
