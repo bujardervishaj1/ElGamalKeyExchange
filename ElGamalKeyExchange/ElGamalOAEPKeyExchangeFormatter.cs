@@ -52,18 +52,14 @@ namespace ElGamalKeyExchange
 
         private byte[] CreateOAEPPaddedData(byte[] p_data)
         {
-            // create a memory stream to hold the padded data
             MemoryStream x_stream = new MemoryStream();
 
-            // define K
             int x_K = o_algorithm.KeySize / 8 - 1;
 
-            // determine the block size
             int x_max_bytes = x_K - (2 * o_lhash.Length) - 2;
-            // determine how many complete blocks there are
+
             int x_complete_blocks = p_data.Length / x_max_bytes;
 
-            // run through and process the complete blocks
             int i = 0;
             byte[] x_block;
             for (; i < x_complete_blocks; i++)
@@ -73,12 +69,10 @@ namespace ElGamalKeyExchange
                 x_stream.Write(x_block, 0, x_block.Length);
             }
 
-            // process any remaining data
             x_block = CreateSingleOAEPBlock(p_data, i * x_max_bytes,
                 p_data.Length - (i * x_max_bytes), x_K);
             x_stream.Write(x_block, 0, x_block.Length);
 
-            // return the padded data
             return x_stream.ToArray();
         }
 
@@ -86,15 +80,8 @@ namespace ElGamalKeyExchange
             int p_count, int p_K)
         {
 
-            // b.        Generate an octet string PS consisting of
-            // k - mLen - 2hLen - 2 zero octets. 
-            // The length of PS may be zero.
             byte[] x_PS = new byte[p_K - p_count - (2 * o_lhash.Length) - 2];
 
-            // c.        Concatenate lHash, PS, a single octet with 
-            // hexadecimal value 0x01, and the message M to form a data 
-            // block DB of length k - hLen - 1 octets as
-            // DB = lHash || PS || 0x01 || M . 
             byte[] x_DB = new byte[o_lhash.Length + x_PS.Length + 1 + p_count];
             Array.Copy(o_lhash, 0, x_DB, 0, o_lhash.Length);
             Array.Copy(x_PS, 0, x_DB, o_lhash.Length, x_PS.Length);
@@ -102,40 +89,31 @@ namespace ElGamalKeyExchange
             Array.Copy(p_data, p_offset, x_DB,
                 o_lhash.Length + x_PS.Length + 1, p_count);
 
-            // d.        Generate a random octet string seed of length hLen
             BigInteger x_temp = new BigInteger();
             x_temp.genRandomBits(o_lhash.Length * 8, o_random);
             byte[] x_seed = x_temp.getBytes();
 
-            // e.        Let dbMask = MGF (seed, k - hLen - 1)
             byte[] x_dbMask = o_mask_generator.GenerateMask(x_seed,
                 p_K - o_lhash.Length - 1);
 
-            // f.        Let maskedDB = DB XOR dbMask.
             byte[] x_maskedDB = new byte[x_DB.Length];
             byte[] x_temp_arr =
                 (new BigInteger(x_DB) ^ new BigInteger(x_dbMask)).getBytes();
             Array.Copy(x_temp_arr, 0, x_maskedDB,
                 x_maskedDB.Length - x_temp_arr.Length, x_temp_arr.Length);
 
-            // g.        Let seedMask = MGF (maskedDB, hLen).
             byte[] x_seedMask = o_mask_generator.GenerateMask(x_maskedDB,
                 o_lhash.Length);
 
-            // h.        Let maskedSeed = seed XOR seedMask.
             byte[] x_maskedSeed
                 = (new BigInteger(x_seed) ^ new BigInteger(x_seedMask)).getBytes();
 
-            // i. Concatenate a single octet with hexadecimal value 0x00, maskedSeed, 
-            // and maskedDB to form an encoded message EM of length k octets as
-            // EM = 0x00 || maskedSeed || maskedDB
             byte[] x_EM = new byte[1 + o_lhash.Length + x_DB.Length];
             Array.Copy(x_maskedSeed, 0, x_EM, x_EM.Length - x_DB.Length
                 - x_maskedSeed.Length, x_maskedSeed.Length);
             Array.Copy(x_maskedDB, 0, x_EM, x_EM.Length - x_maskedDB.Length,
                 x_maskedDB.Length);
 
-            // return the result
             return x_EM;
         }
     }
