@@ -1,10 +1,10 @@
 # ElGamalKeyExchange
 
-Ne kete repository eshte e perfshime detyra e pare ne lenden "Siguria e Informacionit"
+Ne kete repository eshte e perfshime detyra e pare ne lenden "Siguria e Informacionit" me titullin "Zgjerimi i klaseve te .NET Framework per mundesimin e shkembimit te celsave sipas ElGamal".
 
 ## ElGamalKeyExchange
 
-Ne repository eshte perfshihe nje .Net Standar library qe mund te shtohet si reference ne projektet e .Net Framework apo edhe ne .Net Core. Pra mund te perdoret per zgjerimin e klasave te .Net Framework dhe .Net Core per shkembimin e celsave sipas ElGamal
+Ne repository eshte perfshire nje .Net Standard library qe mund te shtohet si reference ne projektet e .Net Framework apo edhe ne .Net Core. Pra mund te perdoret per zgjerimin e klasave te .Net Framework dhe .Net Core per shkembimin e celsave sipas ElGamal.
 
 
 ## Contributing
