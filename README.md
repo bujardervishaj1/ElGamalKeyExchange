@@ -9,8 +9,6 @@ Ne repository eshte perfshire nje .Net Standard library qe mund te shtohet si re
 
 ## Contributing
 
-Please feel free to contribute by adding new templates to this project:
-
 1. Jon Klinaku
 2. Urim Zymberi
 3. Bujar Dervishaj
