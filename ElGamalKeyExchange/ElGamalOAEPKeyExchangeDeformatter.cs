@@ -50,16 +50,12 @@ namespace ElGamalKeyExchange
 
         private byte[] RestoreOAEPPaddedData(byte[] p_data)
         {
-            // create a memory stream to hold the padded data
             MemoryStream x_stream = new MemoryStream();
 
-            // define K
             int x_K = o_algorithm.KeySize / 8 - 1;
 
-            // determine how many complete blocks there are
             int x_blocks = p_data.Length / x_K;
 
-            // run through and process the blocks blocks
             byte[] x_block;
             for (int i = 0; i < x_blocks; i++)
             {
@@ -67,7 +63,6 @@ namespace ElGamalKeyExchange
                 x_stream.Write(x_block, 0, x_block.Length);
             }
 
-            // return the padded data
             return x_stream.ToArray();
         }
 
@@ -75,39 +70,24 @@ namespace ElGamalKeyExchange
             int p_count, int p_K)
         {
 
-            // b. Separate the encoded message EM into a single octet Y, 
-            // an octet string maskedSeed of length hLen, and an octet 
-            // string maskedDB of length k - hLen - 1 
-            // as EM = Y || maskedSeed || maskedDB
             byte[] x_maskedSeed = new byte[o_lhash.Length];
             Array.Copy(p_data, p_offset + 1, x_maskedSeed, 0, o_lhash.Length);
             byte[] x_maskedDB = new byte[p_K - o_lhash.Length - 1];
             Array.Copy(p_data, p_offset + 1 + o_lhash.Length, x_maskedDB,
                 0, x_maskedDB.Length);
 
-            // c.        Let seedMask = MGF (maskedDB, hLen).
             byte[] x_seedMask
                 = o_mask_generator.GenerateMask(x_maskedDB, o_lhash.Length);
 
-            // d.        Let seed = maskedSeed XOR seedMask
             byte[] x_seed = (new BigInteger(x_maskedSeed)
                 ^ new BigInteger(x_seedMask)).getBytes();
 
-            // e.        Let dbMask = MGF (seed, k - hLen - 1).
             byte[] x_dbMask
                 = o_mask_generator.GenerateMask(x_seed, p_K - o_lhash.Length - 1);
 
-            // f.        Let DB = maskedDB XOR dbMask.
             byte[] x_DB = (new BigInteger(x_maskedDB)
                 ^ new BigInteger(x_dbMask)).getBytes();
 
-            // g.        Separate DB into an octet string lHash' of length hLen, a 
-            // (possibly empty) padding string PS consisting of octets with 
-            // hexadecimal value 0x00, and a message M as 
-            // DB = lHash' || PS || 0x01 || M .
-            // If there is no octet with hexadecimal value 0x01 to separate PS from M, 
-            // if lHash does not equal lHash', or if Y is nonzero, 
-            // output "decryption error" and stop. 
             for (int i = 0; i < o_lhash.Length; i++)
             {
                 if (x_DB[i] != o_lhash[i])
@@ -119,13 +99,11 @@ namespace ElGamalKeyExchange
             {
                 throw new CryptographicException("Decryption Error");
             }
-            // find the index representing the start of M
             int x_index = -1;
             for (int i = o_lhash.Length; i < x_DB.Length; i++)
             {
                 if (x_DB[i] == 0x01)
                 {
-                    // the next index is the start of M
                     x_index = i + 1;
                     break;
                 }
@@ -139,7 +117,6 @@ namespace ElGamalKeyExchange
                 throw new CryptographicException("Decryption Error");
             }
 
-            // extract and return M
             byte[] x_message = new byte[x_DB.Length - x_index];
             Array.Copy(x_DB, x_index, x_message, 0, x_message.Length);
             return x_message;
